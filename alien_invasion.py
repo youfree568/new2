@@ -134,38 +134,6 @@ class AlienInvasion:
 			star.rect.x = star.x
 			self.stars.add(star)
 
-			# this commit is test 1
-			# this commit is test 2
-	# def _create_fleet(self):
-		# """Створити флот прибульців"""
-	# 	# створити прибульця
-	# 	alien = Alien(self)
-	# 	alien_width, alien_height = alien.rect.size
-	# 	available_space_x = self.settings.screen_width - (2 * alien_width)
-	# 	number_alien_x = available_space_x // (2 * alien_width)
-	# 	# створити перший ряд прибульців
-		# for alien_number in range(number_alien_x):
-			# self._create_alien(alien_number)
-
-		# визначити, яка кількість рядів прибульців поміщається на екрані.
-		# ship_height = self.ship.rect.height
-		# available_space_y = (self.settings.screen_height -
-		# 					(alien_height * 3) - ship_height)
-		# number_rows = available_space_y // (2 * alien_height)
-		# створити повний флот прибульців.
-		# for row_number in range(number_rows):
-		# 	for alien_number in range(number_alien_x):
-		# 		self._create_alien(alien_number, row_number)
-
-
-	# def _create_alien(self, alien_number, row_number):	
-	# 	# створити прибульця та поставити його до ряду
-	# 	alien = Alien(self)
-	# 	alien_width, alien_height = alien.rect.size
-	# 	alien.x = alien_width + 2 * alien_width * alien_number
-	# 	alien.rect.x = alien.x
-	# 	alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
-	# 	self.aliens.add(alien)
 	
 	def _update_screen(self):
 		"""обновляємо екран"""
