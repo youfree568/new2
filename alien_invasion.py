@@ -24,8 +24,8 @@ class AlienInvasion:
 		pygame.display.set_caption('Hello Alien')
 		self.ship = Ship(self)
 		self.bullets = pygame.sprite.Group()
-		# self.aliens = pygame.sprite.Group()
-		self.stars = pygame.sprite.Group()
+		self.aliens = pygame.sprite.Group()
+		# self.stars = pygame.sprite.Group()
 		self._create_fleet()	
 		"""create a ship"""
 		# self.screen_rect = self.screen.get_rect()
@@ -112,27 +112,28 @@ class AlienInvasion:
 	def _create_fleet(self):
 		# беремо зірку
 		# 13-1
-		star = Star(self)
+		alien = Alien(self)
 		# додаємо зірку до списку
 		# при додаванні тут зірки вона буде відображатися у своєму списку як
 		# дефолтна і буде дублюватись, тому тут цей рядок дублює першу зірку 
 		#  без потреби
 		# self.stars.add(star)
 		# беремо ширину зірки
-		star_width = star.rect.width
+		alien_width = alien.rect.width
 		# скільки місця є для зірок
-		available_space_x = self.settings.screen_width - (2 * star_width)
+		available_space_x = self.settings.screen_width - (2 * alien_width)
 		# кількість зірок в ряді
-		star_number_x = available_space_x // (2 * star_width)
+		alien_number_x = available_space_x // (2 * alien_width)
 		# створення першого ряду зірок
-		for star_number in range(star_number_x):
+		for alien_number in range(alien_number_x):
 			# створити зірку та поставити її в ряд
 			# random_number = randint(-10, 10) - додати у формулу star.x
 			# print(random_number)
-			star = Star(self)
-			star.x = star_width + 2 * star_width * star_number
-			star.rect.x = star.x
-			self.stars.add(star)
+			alien = Alien(self)
+			alien.x = alien_width + 2 * alien_width * alien_number
+			alien.rect.x = alien.x
+			self.aliens.add(alien)
+	# def _create_alien(self, alien_number):
 
 	
 	def _update_screen(self):
@@ -142,7 +143,7 @@ class AlienInvasion:
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet()
 
-		self.stars.draw(self.screen)
+		self.aliens.draw(self.screen)
 		# намалювани іншопланетянена 
 		# self.aliens.draw(self.screen)
 		pygame.display.flip()
