@@ -129,12 +129,14 @@ class AlienInvasion:
 			# створити зірку та поставити її в ряд
 			# random_number = randint(-10, 10) - додати у формулу star.x
 			# print(random_number)
-			alien = Alien(self)
-			alien.x = alien_width + 2 * alien_width * alien_number
-			alien.rect.x = alien.x
-			self.aliens.add(alien)
-	# def _create_alien(self, alien_number):
-
+			self._create_alien(alien_number)
+			
+	def _create_alien(self, alien_number):
+		alien = Alien(self)
+		alien_width = alien.rect.width
+		alien.x = alien_width + 2 * alien_width * alien_number
+		alien.rect.x = alien.x
+		self.aliens.add(alien)
 	
 	def _update_screen(self):
 		"""обновляємо екран"""
