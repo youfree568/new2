@@ -17,7 +17,10 @@ class AlienInvasion:
 		pygame.init()
 		"""screen settings"""
 		self.settings = Settings()
-		self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+		self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+		self.settings.screen_width = self.screen.get_rect().width
+		self.settings.screen_height = self.screen.get_rect().height
+		# self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
 		# self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 		# self.settings.screen_width = self.screen.get_rect().width
 		# self.settings.screen_height = self.screen.get_rect().height
@@ -47,6 +50,7 @@ class AlienInvasion:
 			self.bullets.update()
 			# видаляти кулі при покидані екрану
 			self._update_bullets()
+			self._update_alien()
 			self._update_screen()
 
 	def _check_events(self):
@@ -118,25 +122,57 @@ class AlienInvasion:
 		# дефолтна і буде дублюватись, тому тут цей рядок дублює першу зірку 
 		#  без потреби
 		# self.stars.add(star)
-		# беремо ширину зірки
-		alien_width = alien.rect.width
-		# скільки місця є для зірок
+		# беремо ширину та висту прибульця
+		alien_width, alien_height = alien.rect.size
+		# скільки місця є для прибульців
 		available_space_x = self.settings.screen_width - (2 * alien_width)
-		# кількість зірок в ряді
+		# кількість прибульців в ряді
 		alien_number_x = available_space_x // (2 * alien_width)
-		# створення першого ряду зірок
-		for alien_number in range(alien_number_x):
-			# створити зірку та поставити її в ряд
-			# random_number = randint(-10, 10) - додати у формулу star.x
-			# print(random_number)
-			self._create_alien(alien_number)
+		# number of rows
+		available_space_y = (self.settings.screen_height - self.ship.rect.height 
+		- (alien_height * 3))
+		number_rows = available_space_y // (2 * alien_height)
+		print(number_rows)
+		# create all fleet
+		for row_number in range(number_rows):
+			for alien_number in range(alien_number_x):
+				# створити зірку та поставити її в ряд
+				# random_number = randint(-10, 10) - додати у формулу star.x
+				# print(random_number)
+				self._create_alien(alien_number, row_number)
 			
-	def _create_alien(self, alien_number):
+		
+
+	def _create_alien(self, alien_number, row_number):
 		alien = Alien(self)
-		alien_width = alien.rect.width
+		alien_width, alien_height = alien.rect.size
 		alien.x = alien_width + 2 * alien_width * alien_number
 		alien.rect.x = alien.x
+		alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
 		self.aliens.add(alien)
+
+	def _check_fleet_edges(self):
+		"""реагує відповідно до того, чи досяг котрийсь із прибульців
+		краю екрана
+		"""
+		for alien in self.aliens.sprites():
+			if alien.check_edges():
+				self._change_fleet_direction()
+				break
+
+	def _change_fleet_direction(self):
+		"""спуск всього флоту та зміна його напрямку"""
+		for alien in self.aliens.sprites():
+			alien.rect.y += self.settings.fleet_drop_speed
+		self.settings.fleet_direction *= -1
+	
+	def _update_alien(self):
+		"""
+		check if fleet is on thr edge 
+		of the screen and update all the aliens
+		"""
+		self._check_fleet_edges()
+		self.aliens.update()
 	
 	def _update_screen(self):
 		"""обновляємо екран"""
@@ -144,11 +180,12 @@ class AlienInvasion:
 		self.ship.blitme()
 		for bullet in self.bullets.sprites():
 			bullet.draw_bullet()
-
+		
 		self.aliens.draw(self.screen)
 		# намалювани іншопланетянена 
 		# self.aliens.draw(self.screen)
 		pygame.display.flip()
+
 # print(sys.__doc__)
 # help(sys)
 # help(pygame)
