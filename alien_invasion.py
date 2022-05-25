@@ -1,8 +1,10 @@
 import sys
+from time import sleep
 
 import pygame
 
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -25,6 +27,7 @@ class AlienInvasion:
 		# self.settings.screen_width = self.screen.get_rect().width
 		# self.settings.screen_height = self.screen.get_rect().height
 		pygame.display.set_caption('Hello Alien')
+		self.stats = GameStats(self)
 		self.ship = Ship(self)
 		self.bullets = pygame.sprite.Group()
 		self.aliens = pygame.sprite.Group()
@@ -112,6 +115,18 @@ class AlienInvasion:
 		for bullet in self.bullets.copy():
 			if bullet.rect.bottom <= 0:
 				self.bullets.remove(bullet)
+		self._check_bullet_alien_collisions()	
+
+	def _check_bullet_alien_collisions(self):
+		"""reaction to a collision with a bullet"""
+		# remove all bullets and aliens that collided
+		collisions = pygame.sprite.groupcollide(
+			self.bullets, self.aliens, True, True)
+		if not self.aliens:
+			# destroy bullets and create new fleet
+			self.bullets.empty()
+			self._create_fleet()
+
 
 	def _create_fleet(self):
 		# беремо зірку
@@ -132,7 +147,7 @@ class AlienInvasion:
 		available_space_y = (self.settings.screen_height - self.ship.rect.height 
 		- (alien_height * 3))
 		number_rows = available_space_y // (2 * alien_height)
-		print(number_rows)
+		print(f"number of rows: {number_rows}")
 		# create all fleet
 		for row_number in range(number_rows):
 			for alien_number in range(alien_number_x):
@@ -165,7 +180,20 @@ class AlienInvasion:
 		for alien in self.aliens.sprites():
 			alien.rect.y += self.settings.fleet_drop_speed
 		self.settings.fleet_direction *= -1
-	
+
+	def _ship_hit(self):
+		"""respond to hit alien with ship"""
+		# reduce ships_left.
+		self.stats.ships_left -= 1
+		# позбавити надлишку прибульців та куль
+		self.aliens.empty()
+		self.bullets.empty()
+		# створити новий флот та відцентрувати корабель
+		self._create_fleet()
+		self.ship.center_ship()
+		# pause
+		sleep(0.5)
+
 	def _update_alien(self):
 		"""
 		check if fleet is on thr edge 
@@ -173,6 +201,8 @@ class AlienInvasion:
 		"""
 		self._check_fleet_edges()
 		self.aliens.update()
+		if pygame.sprite.spritecollideany(self.ship, self.aliens):
+			self._ship_hit()
 	
 	def _update_screen(self):
 		"""обновляємо екран"""
@@ -185,7 +215,7 @@ class AlienInvasion:
 		# намалювани іншопланетянена 
 		# self.aliens.draw(self.screen)
 		pygame.display.flip()
-
+	
 # print(sys.__doc__)
 # help(sys)
 # help(pygame)
@@ -193,3 +223,4 @@ if __name__ == '__main__':
 	"""create copy game and run game"""
 	ai = AlienInvasion()
 	ai.run_game()
+	
