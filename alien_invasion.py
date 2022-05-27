@@ -10,6 +10,7 @@ from bullet import Bullet
 from alien import Alien
 from star import Star
 from random import randint
+from button import Button
 
 class AlienInvasion:
 	"""загальний клас"""
@@ -33,6 +34,7 @@ class AlienInvasion:
 		self.aliens = pygame.sprite.Group()
 		# self.stars = pygame.sprite.Group()
 		self._create_fleet()	
+		self.play_button = Button(self, 'Play')
 		"""create a ship"""
 		# self.screen_rect = self.screen.get_rect()
 		# self.image = pygame.image.load('images/ship.bmp')
@@ -49,11 +51,12 @@ class AlienInvasion:
 		"""check event and show screen"""
 		while True:
 			self._check_events()
-			self.ship.update()
-			self.bullets.update()
-			# видаляти кулі при покидані екрану
-			self._update_bullets()
-			self._update_alien()
+			if self.stats.game_active:
+				self.ship.update()
+				self.bullets.update()
+				# видаляти кулі при покидані екрану
+				self._update_bullets()
+				self._update_alien()
 			self._update_screen()
 
 	def _check_events(self):
@@ -184,15 +187,27 @@ class AlienInvasion:
 	def _ship_hit(self):
 		"""respond to hit alien with ship"""
 		# reduce ships_left.
-		self.stats.ships_left -= 1
-		# позбавити надлишку прибульців та куль
-		self.aliens.empty()
-		self.bullets.empty()
-		# створити новий флот та відцентрувати корабель
-		self._create_fleet()
-		self.ship.center_ship()
-		# pause
-		sleep(0.5)
+		if self.stats.ships_left > 0:
+			self.stats.ships_left -= 1
+			# позбавити надлишку прибульців та куль
+			self.aliens.empty()
+			self.bullets.empty()
+			# створити новий флот та відцентрувати корабель
+			self._create_fleet()
+			self.ship.center_ship()
+			# pause
+			sleep(0.5)
+		else:
+			self.stats.game_active = False
+			print("Game over")
+	def _check_aliens_bottom(self):
+		"""check if the alien touch the bottom screen"""
+		screen_rect = self.screen.get_rect()
+		for alien in self.aliens.sprites():
+			if alien.rect.bottom >= screen_rect.bottom:
+				# зреагувати так ніби корабель було підбито
+				self._ship_hit()
+				break
 
 	def _update_alien(self):
 		"""
@@ -203,7 +218,9 @@ class AlienInvasion:
 		self.aliens.update()
 		if pygame.sprite.spritecollideany(self.ship, self.aliens):
 			self._ship_hit()
-	
+		# make sure the alien touches the bottom of the screen
+		self._check_aliens_bottom()
+
 	def _update_screen(self):
 		"""обновляємо екран"""
 		self.screen.fill(self.settings.bg_color)
@@ -214,6 +231,9 @@ class AlienInvasion:
 		self.aliens.draw(self.screen)
 		# намалювани іншопланетянена 
 		# self.aliens.draw(self.screen)
+		if not self.stats.game_active:
+			self.play_button.draw_button()
+			
 		pygame.display.flip()
 	
 # print(sys.__doc__)
