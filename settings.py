@@ -15,4 +15,4 @@ class Settings:
 		self.fleet_drop_speed = 15
 		# fleet direction 1 mins turn right -1 = turn left
 		self.fleet_direction = 1
-		self.ship_limit = 3
+		self.ship_limit = 1

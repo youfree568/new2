@@ -69,6 +69,24 @@ class AlienInvasion:
 			# припинення руху
 			elif event.type == pygame.KEYUP:
 				self._check_keyup_events(event)
+			elif event.type == pygame.MOUSEBUTTONDOWN:
+				mouse_pos = pygame.mouse.get_pos()
+				self._check_play_button(mouse_pos)
+
+	def _check_play_button(self, mouse_pos):
+		"""if mouse click on "PLAY" button starts game"""
+		button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+		if button_clicked and not self.stats.game_active:
+			# анулювати ігрову статистику
+			self.stats.reset_stats()
+			self.stats.game_active = True
+			# позбавитися надлишку прибульців та куль.
+			self.aliens.empty()
+			self.bullets.empty()
+			# створити влот і відцентрувати корабель
+			self._create_fleet()
+			self.ship.center_ship()
+			pygame.mouse.set_visible(False)
 
 	def _check_keydown_events(self, event):
 		# реакція на натискання клавіші
@@ -199,7 +217,9 @@ class AlienInvasion:
 			sleep(0.5)
 		else:
 			self.stats.game_active = False
+			pygame.mouse.set_visible(True)
 			print("Game over")
+
 	def _check_aliens_bottom(self):
 		"""check if the alien touch the bottom screen"""
 		screen_rect = self.screen.get_rect()
